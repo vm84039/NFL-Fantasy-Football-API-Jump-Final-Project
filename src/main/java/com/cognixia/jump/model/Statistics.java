@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import net.bytebuddy.implementation.bind.annotation.Default;
+
 @Table(name = "statistics")
 @Entity
 public class Statistics implements Serializable {
@@ -75,6 +77,10 @@ public class Statistics implements Serializable {
     @Column(name = "receiving_td")
     private int receivingTouchdowns;
     
+    @Column(name = "score") 
+    private long score = 0;
+    
+        
     public Statistics() {
     	
     }
@@ -227,7 +233,51 @@ public class Statistics implements Serializable {
 	public void setReceivingTouchdowns(int receivingTouchdowns) {
 		this.receivingTouchdowns = receivingTouchdowns;
 	}
+	
+	
 
+	public int getWeekNumber() {
+		return weekNumber;
+	}
+
+
+
+	public void setWeekNumber(int weekNumber) {
+		this.weekNumber = weekNumber;
+	}
+
+
+	public void calculateScore() {
+		long score = 0;
+		int passingIncompletions = getPassingAttempts() - getPassingCompletions();
+		
+		// Calculate Passing Scores
+		score += (getPassingCompletions() * 5);
+		score -= passingIncompletions;
+		score += (getPassingYards() * 2);
+		score += (getPassingTouchdowns() * 100);
+		score -= (getPassingInterceptions() * 50);
+		
+		// Calculate Rushing Scores
+		score += (getRushingAttempts() * 5);
+		score += (getRushingYards() * 5);
+		score += (getRushingTouchdowns() * 100);
+		
+		// Calculate Receiving Scores
+		score += (getReceivingReceptions() * 40);
+		score += (getReceivingYards() * 8);
+		score += (getReceivingTouchdowns() * 200);		
+		
+		setScore(score);
+	}
+	
+	public long getScore() {
+		return score;
+	}
+
+	public void setScore(long score) {
+		this.score = score;
+	}
 	@Override
 	public String toString() {
 		return "Statistics [statId=" + statId + ", player=" + player +  ", passingCompletions="

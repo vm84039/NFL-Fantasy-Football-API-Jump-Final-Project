@@ -52,6 +52,8 @@ public class PlayerService {
     			passingYards, passingTouchdowns, passingInterceptions, rushingAttempts, rushingYards,
     			rushingTouchdowns, receivingTargets, receivingReceptions, receivingYards,
     			receivingTouchdowns);
+        System.out.println("Score = " + statistics.getScore());
+        statistics.calculateScore();
 
         // Save the statistics to the database
         statisticsRepository.save(statistics);
