@@ -33,6 +33,13 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity.status(404).body(errorDetails);
 	}
+	@ExceptionHandler(StatisticsException.class)
+	public ResponseEntity<?> statisticsException( StatisticsException ex, WebRequest request ) {
+		
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false) );
+		
+		return ResponseEntity.status(404).body(errorDetails);
+	}
 
 
 }

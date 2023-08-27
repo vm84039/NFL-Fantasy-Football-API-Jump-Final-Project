@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +23,13 @@ public class Player implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	public enum Position {
+	    QB, // Quarterback
+	    RB, // Running Back
+	    WR, // Wide Receiver
+	    TE  // Tight End
+	}
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "player_id")
@@ -32,8 +41,9 @@ public class Player implements Serializable {
     @Column(name = "player_last_name", nullable = false)
     private String playerLastName;
 
-    @Column(name = "position", nullable = false, length = 50)
-    private String position;
+    @Column(name = "position")
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Statistics> statistics = new ArrayList<>();
@@ -42,7 +52,7 @@ public class Player implements Serializable {
     	
     }
     
-	public Player(String playerFirstName, String playerLastName, String team, String position) {
+	public Player(String playerFirstName, String playerLastName, Position position) {
 		this.playerFirstName = playerFirstName;
 		this.playerLastName = playerLastName;
 		this.position = position;
@@ -72,11 +82,11 @@ public class Player implements Serializable {
         this.playerLastName = playerLastName;
     }
 
-    public String getPosition() {
+    public Position getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
