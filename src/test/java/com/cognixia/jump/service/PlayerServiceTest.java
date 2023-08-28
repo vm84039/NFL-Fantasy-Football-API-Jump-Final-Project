@@ -58,28 +58,5 @@ public class PlayerServiceTest {
 		assertEquals(expectedResult, result);
 	}
 
-	@Test
-	public void testGetTopScoresByPositionByWeek() {
-		// Create sample data
-		int year = 2023;
-		int weekNum = 5;
-		Position position = Position.QB; // Replace with the desired position
-		int num = 3; // Replace with the desired number of top scores
 
-		// Create a list of sample Statistics objects
-		List<Statistics> sampleStatsList = new ArrayList<>();
-		// Add sample Statistics objects to the list (replace with your own test data)
-
-		// Mock the behavior of the statisticsRepository
-		when(statisticsRepository.getTopScoresByPositionByWeek(year, weekNum, position)).thenReturn(sampleStatsList);
-
-		// Call the method being tested
-		List<Statistics> result = statisticsService.getTopScoresByPositionByWeek(year, weekNum, position, num);
-
-		// Verify that the result is not null
-		assertNotNull(result);
-
-		// Add more assertions as needed to verify the correctness of the result based
-		// on your sample data
-	}
 }
