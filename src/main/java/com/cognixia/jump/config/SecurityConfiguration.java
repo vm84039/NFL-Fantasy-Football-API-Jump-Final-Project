@@ -1,5 +1,7 @@
 package com.cognixia.jump.config;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,23 +38,40 @@ public class SecurityConfiguration {
 	@Bean
 	protected SecurityFilterChain filterChain( HttpSecurity http ) throws Exception {
 		
-		http.csrf().disable()
-			.authorizeRequests()
-			.antMatchers("/authenticate").permitAll()
-			.anyRequest().authenticated()
-			.and()
-			// tell spring secruity to NOT CREATE SESSIONS
-			.sessionManagement().sessionCreationPolicy( SessionCreationPolicy.STATELESS );
+		http
+	    .csrf().disable()
+	    .authorizeRequests()
+	        .antMatchers("/authenticate").permitAll()
+	        .antMatchers(HttpMethod.POST, "/api/statistics/").hasRole("ADMIN") // Allow only ADMIN to POST
+	        .antMatchers("/api/statistics/**").hasRole("USER") // Allow customers to access their own data
+	        .antMatchers("/api/all").permitAll()
+	        .anyRequest().authenticated()
+	    .and()
+	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-		return http.build();
+	// Exception handling begins here
+    http.exceptionHandling()
+        .authenticationEntryPoint((request, response, ex) -> {
+            // Handle authentication-related exceptions here
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Not able to authenticate token");
+        })
+        .accessDeniedHandler((request, response, ex) -> {
+            // Handle access denied exceptions here
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Not authorized.  Only ADMIN can POST statistics");
+        });
+	
+	return http.build();
+	
 	}
 	
 	@Bean
 	protected PasswordEncoder encoder() {
 		
-		return NoOpPasswordEncoder.getInstance();
+		return new BCryptPasswordEncoder();
 				
 	}
 	

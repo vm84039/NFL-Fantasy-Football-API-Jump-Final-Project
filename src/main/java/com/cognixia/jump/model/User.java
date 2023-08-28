@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 @Entity
 public class User implements Serializable {
 
@@ -48,6 +50,13 @@ public class User implements Serializable {
 	public User(Integer id, @NotBlank String username, @NotBlank String password, Role role, boolean enabled) {
 		super();
 		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.enabled = enabled;
+	}
+	public User( @NotBlank String username, @NotBlank String password, Role role, boolean enabled) {
+		super();
 		this.username = username;
 		this.password = password;
 		this.role = role;
@@ -99,7 +108,11 @@ public class User implements Serializable {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + ", enabled="
 				+ enabled + "]";
 	}
-	
+    public void setPlainPassword(String plainPassword) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(plainPassword);
+        this.password = hashedPassword;
+    }
 }
 
 

@@ -40,6 +40,14 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity.status(404).body(errorDetails);
 	}
+	@ExceptionHandler(SecurityException.class)
+	public ResponseEntity<?> securityException( SecurityException ex, WebRequest request ) {
+		
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false) );
+		
+		return ResponseEntity.status(403).body(errorDetails);
+	}
+
 
 
 }

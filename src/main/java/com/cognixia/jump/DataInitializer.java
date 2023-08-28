@@ -6,15 +6,21 @@ import org.springframework.stereotype.Component;
 
 import com.cognixia.jump.exception.StatisticsException;
 import com.cognixia.jump.model.Player.Position;
+import com.cognixia.jump.model.User;
+import com.cognixia.jump.model.User.Role;
+import com.cognixia.jump.repository.UserRepository;
 import com.cognixia.jump.service.PlayerService;
 import com.cognixia.jump.service.StatisticsService;
 
-@Component
+//@Component
 public class DataInitializer implements CommandLineRunner {
 
 	private final PlayerService playerService;
 	private final StatisticsService statisticsService;
-
+	
+	@Autowired
+	UserRepository userRepository;
+	
 	@Autowired
 	public DataInitializer(PlayerService playerService, StatisticsService statisticsService) {
 		this.playerService = playerService;
@@ -23,6 +29,9 @@ public class DataInitializer implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws StatisticsException {
+		
+		
+		insertUsers();
 		insertStatisticsWeek1();
 		insertStatisticsWeek2();
 		insertStatisticsWeek3();
@@ -42,7 +51,22 @@ public class DataInitializer implements CommandLineRunner {
 		insertStatisticsWeek17();
 		insertStatisticsWeek18();
 	}
+	private void insertUsers() {
+		User user = new User();
+		user.setUsername("user1");
+		user.setPlainPassword("password123");
+		user.setRole(Role.valueOf("ROLE_USER"));
+		user.setEnabled(false);
+		userRepository.save(user);
+		
+		User admin = new User();
+		admin.setUsername("admin1");
+		admin.setPlainPassword("password123");
+		admin.setRole(Role.valueOf("ROLE_ADMIN"));
+		admin.setEnabled(false);
+		userRepository.save(admin);
 
+	}
 	private void insertStatisticsWeek1() throws StatisticsException {
 		// NFL Statistics 2022 Week1
 		playerService.insertPlayerWithStatistics("Trace", "McSorley", "ARI", Position.valueOf("QB"), 2022, 1, 2, 4, 12,
