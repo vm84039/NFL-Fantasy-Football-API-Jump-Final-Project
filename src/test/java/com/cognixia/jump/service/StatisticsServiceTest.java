@@ -87,6 +87,52 @@ public class StatisticsServiceTest {
 
         // Add more assertions as needed to verify the correctness of the result based on your sample data
     }
+    
+    @Test
+    public void testCalculateScore() {
+        // Create sample data
+        int passingAttempts = 30;
+        int passingCompletions = 20;
+        int passingYards = 300;
+        int passingTouchdowns = 2;
+        int passingInterceptions = 1;
+        int rushingAttempts = 10;
+        int rushingYards = 80;
+        int rushingTouchdowns = 1;
+        int receivingReceptions = 5;
+        int receivingYards = 60;
+        int receivingTouchdowns = 1;
+
+        // Call the method being tested
+        long score = statisticsService.calculateScore(passingAttempts, passingCompletions, passingYards, passingTouchdowns, passingInterceptions,
+                rushingAttempts, rushingYards, rushingTouchdowns, receivingReceptions, receivingYards, receivingTouchdowns);
+
+        // Verify that the score is calculated as expected based on your sample data
+        assertEquals(2570, score); // Replace with the expected score based on your sample data
+    }
+
+    @Test
+    public void testGetTopScoresAllPlayersByWeek() {
+        // Create sample data
+        int year = 2023;
+        int weekNum = 5;
+        int num = 3; // Replace with the desired number of top scores
+
+        // Create a list of sample Statistics objects
+        List<Statistics> sampleStatsList = new ArrayList<>();
+        // Add sample Statistics objects to the list (replace with your own test data)
+
+        // Mock the behavior of the statisticsRepository
+        when(statisticsRepository.getTopScoresAllPlayersByWeek(year, weekNum, num)).thenReturn(sampleStatsList);
+
+        // Call the method being tested
+        List<Statistics> result = statisticsService.getTopScoresAllPlayersByWeek(year, weekNum, num);
+
+        // Verify that the result is not null
+        assertNotNull(result);
+
+        // Add more assertions as needed to verify the correctness of the result based on your sample data
+    }
 
 //    @Test
 //    public void testInsertStatistics() throws StatisticsException {

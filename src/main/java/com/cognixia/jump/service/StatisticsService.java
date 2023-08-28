@@ -39,12 +39,12 @@ public class StatisticsService {
 		// Calculate passing Scores
 		score += (passingCompletions * 5);
 		score -= passingIncompletions;
-		score += (passingYards * 2);
+		score += (passingYards * 2); 
 		score += (passingTouchdowns * 200);
 		score -= (passingInterceptions * 50);
 		
 		// Calculate rushing Scores
-		score += (rushingAttempts * 5);
+		score += (rushingAttempts * 5); 
 		score += (rushingYards * 5);
 		score += (rushingTouchdowns * 200);
 		
