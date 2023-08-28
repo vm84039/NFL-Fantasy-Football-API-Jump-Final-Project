@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,7 +13,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import net.bytebuddy.implementation.bind.annotation.Default;
 
 @Table(name = "statistics")
 @Entity
@@ -41,6 +39,9 @@ public class Statistics implements Serializable {
     
     @Column(name = "team", nullable = false, length = 3)
     private String team;
+    
+    @Column(name = "message")
+    private String message;
 
     @Column(name = "passing_comp")
     private int passingCompletions;
@@ -246,8 +247,6 @@ public class Statistics implements Serializable {
 	public void setWeekNumber(int weekNumber) {
 		this.weekNumber = weekNumber;
 	}
-
-
 	public void calculateScore() {
 		long score = 0;
 		int passingIncompletions = getPassingAttempts() - getPassingCompletions();
@@ -255,21 +254,22 @@ public class Statistics implements Serializable {
 		// Calculate Passing Scores
 		score += (getPassingCompletions() * 5);
 		score -= passingIncompletions;
-		score += (getPassingYards() * 2);
+		score += (getPassingYards() * 4);
 		score += (getPassingTouchdowns() * 100);
 		score -= (getPassingInterceptions() * 50);
 		
 		// Calculate Rushing Scores
 		score += (getRushingAttempts() * 5);
-		score += (getRushingYards() * 5);
+		score += (getRushingYards() * 10);
 		score += (getRushingTouchdowns() * 100);
 		
 		// Calculate Receiving Scores
-		score += (getReceivingReceptions() * 40);
-		score += (getReceivingYards() * 8);
-		score += (getReceivingTouchdowns() * 200);		
+		score += (getReceivingReceptions() * 30);
+		score += (getReceivingYards() * 10);
+		score += (getReceivingTouchdowns() * 100);		
 		
 		setScore(score);
+		setMessage(message);
 	}
 	
 	public long getScore() {
@@ -278,6 +278,28 @@ public class Statistics implements Serializable {
 
 	public void setScore(long score) {
 		this.score = score;
+	}
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = scoreMessage();
+	}
+	
+	public String scoreMessage() {
+		String message;
+		if (score > 2000) {
+			message = "Hope you started this player.  One of the best scores of the season.";
+		}
+		else if (score > 1000) {
+			message = "Very good game from this player.  Would be a good choice to start on your team.";
+		}
+		else {
+			message ="This was not a very good pick for this week.";
+		}
+			
+		return message;
 	}
 	@Override
 	public String toString() {
@@ -289,6 +311,27 @@ public class Statistics implements Serializable {
 				+ receivingReceptions + ", receivingYards=" + receivingYards + ", receivingTouchdowns="
 				+ receivingTouchdowns + "]";
 	}
+	public String toJsonString() {
+	    StringBuilder sb = new StringBuilder();
+
+	    sb.append("\n");
+	    sb.append(this.scoreMessage()).append(",\n");
+	    sb.append("\"passingCompletions\": ").append(this.passingCompletions).append(",\n");
+	    sb.append("\"passingAttempts\": ").append(this.passingAttempts).append(",\n");
+	    sb.append("\"passingYards\": ").append(this.passingYards).append(",\n");
+	    sb.append("\"passingTouchdowns\": ").append(this.passingTouchdowns).append(",\n");
+	    sb.append("\"passingInterceptions\": ").append(this.passingInterceptions).append(",\n");
+	    sb.append("\"rushingAttempts\": ").append(this.rushingAttempts).append(",\n");
+	    sb.append("\"rushingYards\": ").append(this.rushingYards).append(",\n");
+	    sb.append("\"rushingTouchdowns\": ").append(this.rushingTouchdowns).append(",\n");
+	    sb.append("\"receivingTargets\": ").append(this.receivingTargets).append(",\n");
+	    sb.append("\"receivingReceptions\": ").append(this.receivingReceptions).append(",\n");
+	    sb.append("\"receivingYards\": ").append(this.receivingYards).append(",\n");
+	    sb.append("\"receivingTouchdowns\": ").append(this.receivingTouchdowns).append("\n");
+
+	    return sb.toString();
+	}
+	
     
     
 
