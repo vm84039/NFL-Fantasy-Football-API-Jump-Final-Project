@@ -289,6 +289,33 @@ public class Statistics implements Serializable {
 				+ receivingReceptions + ", receivingYards=" + receivingYards + ", receivingTouchdowns="
 				+ receivingTouchdowns + "]";
 	}
+	
+	public String toJson() {
+	    return "{"
+	            + "\"statId\" : " + statId
+	            + ", \"player\" : " + player.toJson()
+	            + ", \"year\" : " + year
+	            + ", \"weekNumber\" : " + weekNumber
+	            + ", \"team\" : \"" + team + "\""
+	            + ", \"passingCompletions\" : " + passingCompletions
+	            + ", \"passingAttempts\" : " + passingAttempts
+	            + ", \"passingYards\" : " + passingYards
+	            + ", \"passingTouchdowns\" : " + passingTouchdowns
+	            + ", \"passingInterceptions\" : " + passingInterceptions
+	            + ", \"rushingAttempts\" : " + rushingAttempts
+	            + ", \"rushingYards\" : " + rushingYards
+	            + ", \"rushingTouchdowns\" : " + rushingTouchdowns
+	            + ", \"receivingTargets\" : " + receivingTargets
+	            + ", \"receivingReceptions\" : " + receivingReceptions
+	            + ", \"receivingYards\" : " + receivingYards
+	            + ", \"receivingTouchdowns\" : " + receivingTouchdowns
+	            + ", \"score\" : " + score
+	            + "}";
+	}
+
+
+
+
     
     
 
