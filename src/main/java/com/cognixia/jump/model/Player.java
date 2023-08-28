@@ -103,6 +103,18 @@ public class Player implements Serializable {
 		return "Player [playerId=" + playerId + ", playerFirstName=" + playerFirstName + ", playerLastName="
 				+ playerLastName + ", position=" + position + "]";
 	}
+	
+	public String toJson() {
+	    return "{"
+	            + "\"playerId\" : " + playerId
+	            + ", \"playerFirstName\" : \"" + playerFirstName + "\""
+	            + ", \"playerLastName\" : \"" + playerLastName + "\""
+	            + ", \"position\" : \"" + position + "\""
+	            + "}";
+	}
+
+	
+	
 
 
 }

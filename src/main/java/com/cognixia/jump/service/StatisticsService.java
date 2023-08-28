@@ -1,5 +1,6 @@
 package com.cognixia.jump.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,16 @@ import com.cognixia.jump.repository.StatisticsRepository;
 public class StatisticsService {
 	
 	@Autowired
-	StatisticsRepository statisticeRepository;
+	StatisticsRepository statisticsRepository;
 	
 	@Autowired
 	PlayerRepository playerRepository;
 	
 	@Autowired
 	PlayerService playerService;
+	
+	@Autowired
+	ValidateService validateService;
 	
 	//accepts parameters to calculate a fantasy score 
 	public long calculateScore(int passingAttempts, int passingCompletions, int passingYards, int passingTouchdowns, int passingInterceptions,
@@ -51,52 +55,60 @@ public class StatisticsService {
 		
 		return score;
 	}
-	
-	public Statistics insertStatistics(Statistics stats) throws StatisticsException{
-//		//Checks to see if PlayerID is null.  If null create new player with statistics
-		if (stats.getPlayer() != null && stats.getPlayer().getPlayerId() == null){
-		return playerService.insertPlayerWithStatistics(stats.getPlayer().getPlayerFirstName(), 
-					stats.getPlayer().getPlayerLastName(), stats.getTeam(), stats.getPlayer().getPosition(), stats.getYear(), 
-					stats.getWeekNumber(), stats.getPassingCompletions(), stats.getPassingAttempts(), stats.getPassingYards(), 
-					stats.getPassingTouchdowns(), stats.getPassingInterceptions(), stats.getRushingAttempts(), stats.getRushingYards(), 
-					stats.getRushingTouchdowns(), stats.getReceivingTargets(), stats.getReceivingReceptions(), 
-					stats.getReceivingYards(), stats.getReceivingTouchdowns());
-		}
+	public List<Statistics>getTopScoresAllPlayersByWeek(Integer year, Integer weekNum, Integer num) {
+		return statisticsRepository.getTopScoresAllPlayersByWeek(year, weekNum, num);
+	}
+	public List<Statistics>getTopScoresByPositionByWeek(Integer year, Integer weekNum, Position position, Integer num) {
+		List<Statistics> topScores = statisticsRepository.getTopScoresByPositionByWeek(year, weekNum, position);
+        if (topScores.size() > num) {
+            topScores = topScores.subList(0, num);
+        }
+		return topScores;
+	}
+	public List<Statistics> getTopScoresForPlayerByName(Integer year, String playerFirstName, String playerLastName){
 		
-	else if ((stats.getPlayer().getPlayerId() != null) && 
-	        (stats.getPlayer().getPlayerFirstName() == null) &&
-			(stats.getPlayer().getPlayerLastName()== null) && 
-			(stats.getPlayer().getPosition()== null)){
-			
-			Optional<Player> found = playerRepository.findById(stats.getPlayer().getPlayerId());
-		return playerService.insertPlayerWithStatistics(found.get().getPlayerFirstName(), 
-				found.get().getPlayerLastName(), stats.getTeam(), found.get().getPosition(), stats.getYear(), 
-				stats.getWeekNumber(), stats.getPassingCompletions(), stats.getPassingAttempts(), stats.getPassingYards(), 
-				stats.getPassingTouchdowns(), stats.getPassingInterceptions(), stats.getRushingAttempts(), stats.getRushingYards(), 
-				stats.getRushingTouchdowns(), stats.getReceivingTargets(), stats.getReceivingReceptions(), 
-				stats.getReceivingYards(), stats.getReceivingTouchdowns());
+		return statisticsRepository.getTopScoresForPlayerByName(year, playerFirstName, playerLastName);
 	}
-
-				Player postPlayer = playerRepository.getById(stats.getPlayer().getPlayerId());
-
-			    // Check if PlayerID, first name, last name, and position match the database
-		if (stats.getPlayer().getPlayerFirstName().equals(postPlayer.getPlayerFirstName()) && 
-			     stats.getPlayer().getPlayerLastName().equals(postPlayer.getPlayerLastName()) &&
-			     stats.getPlayer().getPosition() == postPlayer.getPosition()) { 
-			return playerService.insertPlayerWithStatistics(stats.getPlayer().getPlayerFirstName(), 
-				stats.getPlayer().getPlayerLastName(), stats.getTeam(), stats.getPlayer().getPosition(), stats.getYear(), 
-				stats.getWeekNumber(), stats.getPassingCompletions(), stats.getPassingAttempts(), stats.getPassingYards(), 
-				stats.getPassingTouchdowns(), stats.getPassingInterceptions(), stats.getRushingAttempts(), stats.getRushingYards(), 
-				stats.getRushingTouchdowns(), stats.getReceivingTargets(), stats.getReceivingReceptions(), 
-				stats.getReceivingYards(), stats.getReceivingTouchdowns());
-		}
-		else {
-			throw new StatisticsException(stats.getPlayer().getPlayerId() + " is not the playerId of" + stats.getPlayer().getPlayerFirstName() + " "+ 
-					stats.getPlayer().getPlayerLastName() + " or the position is incorect.  Either Leave playerID blank,"
-					+ "for we can insert a new player, or enter only playerId and " 
-					+ "leave playerFirstName, playerLastName, and positon blank");
-		}
+	public List<Statistics> getTopScoresOfSeason(Integer year, Integer num ){
+		List<Statistics> topScores = statisticsRepository.getTopScoresOfSeason(year);
+        if (topScores.size() > num) {
+            topScores = topScores.subList(0, num);
+        }
+		return topScores;
+		
 	}
+	public Statistics insertStatistics(Statistics stats) throws StatisticsException{	
+	    validateService.validatePostRequest(stats.getPlayer(), stats.getTeam(), stats.getYear(), stats.getWeekNumber(),
+	            stats.getPassingCompletions(), stats.getPassingAttempts(), stats.getPassingYards(),
+	            stats.getPassingTouchdowns(), stats.getPassingInterceptions(), stats.getRushingAttempts(), stats.getRushingYards(),
+	            stats.getRushingTouchdowns(), stats.getReceivingTargets(), stats.getReceivingReceptions(),
+	            stats.getReceivingYards(), stats.getReceivingTouchdowns());
+	    
+	    String firstName;
+	    String lastName;
+	    Position position;
 
+	    // Check if playerId is not null
+	    if (stats.getPlayer().getPlayerId() != null) {
+	        Optional<Player> player = playerRepository.findById(stats.getPlayer().getPlayerId());
+
+	        if (!player.isPresent()) {
+	            throw new StatisticsException("Player with ID " + stats.getPlayer().getPlayerId() + " not found in the database");
+	        }
+
+	        firstName = player.get().getPlayerFirstName();
+	        lastName = player.get().getPlayerLastName();
+	        position = player.get().getPosition();
+	    } else {
+	        firstName = stats.getPlayer().getPlayerFirstName();
+	        lastName = stats.getPlayer().getPlayerLastName();
+	        position = stats.getPlayer().getPosition();
+	    }
+	    return playerService.insertPlayerWithStatistics(firstName, lastName, stats.getTeam(), position, stats.getYear(),
+	            stats.getWeekNumber(), stats.getPassingCompletions(), stats.getPassingAttempts(), stats.getPassingYards(),
+	            stats.getPassingTouchdowns(), stats.getPassingInterceptions(), stats.getRushingAttempts(), stats.getRushingYards(),
+	            stats.getRushingTouchdowns(), stats.getReceivingTargets(), stats.getReceivingReceptions(),
+	            stats.getReceivingYards(), stats.getReceivingTouchdowns());
+	}
 
 }
