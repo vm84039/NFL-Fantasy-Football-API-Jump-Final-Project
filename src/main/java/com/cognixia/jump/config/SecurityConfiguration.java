@@ -42,6 +42,7 @@ public class SecurityConfiguration {
 	    .csrf().disable()
 	    .authorizeRequests()
 	        .antMatchers("/authenticate").permitAll()
+	        .antMatchers(HttpMethod.POST, "/api/user").permitAll()
 	        .antMatchers(HttpMethod.POST, "/api/statistics/").hasRole("ADMIN") // Allow only ADMIN to POST
 	        .antMatchers("/api/statistics/**").hasRole("USER") // Allow customers to access their own data
 	        .antMatchers("/api/all").permitAll()
