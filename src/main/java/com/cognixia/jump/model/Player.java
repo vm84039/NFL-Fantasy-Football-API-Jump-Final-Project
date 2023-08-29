@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 @Table(name = "player")
 @Entity
@@ -35,7 +37,8 @@ public class Player implements Serializable {
     @Column(name = "player_id")
     private Long playerId;
 
-    @Column(name = "player_first_name", nullable = false)
+	@Schema(description = "Player First Name", example = "Josh", required = true)
+	@Column(name = "player_first_name", nullable = false)
     private String playerFirstName;
 
     @Column(name = "player_last_name", nullable = false)
