@@ -8,11 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-<<<<<<< Updated upstream
-=======
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
->>>>>>> Stashed changes
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +17,7 @@ import com.cognixia.jump.exception.ResourceNotFoundException;
 import com.cognixia.jump.model.Statistics;
 import com.cognixia.jump.repository.StatisticsRepository;
 import com.cognixia.jump.service.PlayerService;
+import com.cognixia.jump.service.StatisticsService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,9 +36,7 @@ public class StatisticsController {
 	StatisticsRepository repo;
 	
 	@Autowired
-<<<<<<< Updated upstream
 	PlayerService service;
-=======
 	PlayerService playerService;
 	@Autowired
 	StatisticsService statisticsService;
@@ -52,7 +48,14 @@ public class StatisticsController {
 			   		+ "fantasy score"
 			)
 	
->>>>>>> Stashed changes
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Statistic has been found", 
+						 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Statistics.class) ) ),
+			@ApiResponse(responseCode = "404", description = "Statistic was not found/Invalid post", 
+			 			 content = @Content ) 
+		}
+	)
+	
 	//Shows all NFL stats for 
 	//api/season/weekNumber
 	@GetMapping("/statistics/{season}/{weekNumber}")
@@ -68,13 +71,7 @@ public class StatisticsController {
 		
 		return ResponseEntity.status(200).body(found);
 	}
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Statistic has been found", 
-						 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Statistics.class) ) ),
-			@ApiResponse(responseCode = "404", description = "Statistic was not found/Invalid post", 
-			 			 content = @Content ) 
-		}
-	)
+
 	
 
 	
