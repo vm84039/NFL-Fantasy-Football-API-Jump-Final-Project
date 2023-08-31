@@ -51,9 +51,7 @@ public class SecurityConfiguration {
 	        .antMatchers(HttpMethod.POST, "/api/statistics/").hasRole("ADMIN") // Allow only ADMIN to POST 
 	        .antMatchers("/api/statistics/**").hasRole("USER") // Allow users to access and calculate player stats
 	        .antMatchers("/api/user").permitAll()// allow creation of 
-
-	        .antMatchers("/authenticate").permitAll()
-	        .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+	        
 	        .antMatchers(HttpMethod.POST, "/api/statistics/").hasRole("ADMIN") // Allow only ADMIN to POST
 	        .antMatchers("/api/statistics/**").hasRole("USER") // Allow customers to access their own data
 	        .antMatchers("/api/all").permitAll()
