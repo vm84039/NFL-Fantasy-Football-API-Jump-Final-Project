@@ -51,7 +51,7 @@ public class StatisticsController {
 		return ResponseEntity.status(200).body(found);
 	}
 	
-	@PostMapping("/statistics/")
+	@PostMapping("/statistics")
 	
 	public ResponseEntity<?> insertStatistics(@Valid @RequestBody Statistics stats) 
 	    throws StatisticsException {

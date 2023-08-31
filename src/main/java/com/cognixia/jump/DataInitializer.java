@@ -12,7 +12,7 @@ import com.cognixia.jump.repository.UserRepository;
 import com.cognixia.jump.service.PlayerService;
 import com.cognixia.jump.service.StatisticsService;
 
-//@Component
+@Component
 public class DataInitializer implements CommandLineRunner {
 
 	private final PlayerService playerService;
